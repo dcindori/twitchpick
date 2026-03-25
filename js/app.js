@@ -19,6 +19,9 @@
   const prevWinnersWrap    = document.getElementById('prev-winners-wrap');
   const prevWinnersList    = document.getElementById('prev-winners-list');
 
+  const participantsSection = document.getElementById('participants-section');
+  const participantsList    = document.getElementById('participants-list');
+
   const resetCloudBtn      = document.getElementById('reset-cloud-btn');
   const messageCount       = document.getElementById('message-count');
 
@@ -86,6 +89,7 @@
     if (keyword === '' || message.trim().toLowerCase() === keyword) {
       const added = wheel.addParticipant(username);
       if (added) {
+        addParticipantChip(username);
         updateParticipantCount();
         // Highlight matching messages in feed
         if (keyword !== '') {
@@ -101,6 +105,8 @@
     wheel.clear();
     lastWinner = null;
     winnerDisplay.classList.add('hidden');
+    participantsList.innerHTML = '';
+    participantsSection.style.display = 'none';
     updateParticipantCount();
   });
 
@@ -136,6 +142,16 @@
     tag.className = 'prev-winner-tag';
     tag.textContent = winner;
     prevWinnersList.appendChild(tag);
+  }
+
+  function addParticipantChip(username) {
+    participantsSection.style.display = 'flex';
+    const chip = document.createElement('span');
+    chip.className = 'participant-chip';
+    chip.textContent = username;
+    participantsList.appendChild(chip);
+    // Scroll to newest chip
+    participantsList.scrollTop = participantsList.scrollHeight;
   }
 
   function updateParticipantCount() {

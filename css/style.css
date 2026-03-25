@@ -413,6 +413,50 @@ html, body {
   color: var(--text-muted);
 }
 
+/* ── Participant list ─────────────────────────────────────── */
+.participants-section {
+  margin: 14px 20px 0;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  flex-shrink: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 130px;
+}
+.participants-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.participants-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 2px;
+}
+.participant-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  background: rgba(145, 71, 255, .12);
+  border: 1px solid rgba(145, 71, 255, .3);
+  border-radius: 20px;
+  color: var(--accent);
+  animation: chip-in .15s ease;
+  white-space: nowrap;
+}
+@keyframes chip-in {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 /* ============================================================
    WORD CLOUD PANEL
    ============================================================ */
@@ -520,6 +564,7 @@ html, body {
 
 .chat-feed {
   flex: 1;
+  min-height: 0;          /* critical — prevents flex child from growing past parent */
   overflow-y: auto;
   padding: 0 14px 8px;
   display: flex;
