@@ -19,8 +19,7 @@
   const prevWinnersWrap    = document.getElementById('prev-winners-wrap');
   const prevWinnersList    = document.getElementById('prev-winners-list');
 
-  const participantsSection = document.getElementById('participants-section');
-  const participantsList    = document.getElementById('participants-list');
+  const participantsList   = document.getElementById('participants-list');
 
   const resetCloudBtn      = document.getElementById('reset-cloud-btn');
   const messageCount       = document.getElementById('message-count');
@@ -85,8 +84,9 @@
     // Word cloud always gets every message
     cloud.addMessage(username, message);
 
-    // Wheel: add participant if keyword matches (or no keyword set)
-    if (keyword === '' || message.trim().toLowerCase() === keyword) {
+    // Wheel: add participant if any word in message matches keyword exactly (case insensitive)
+    const words = message.trim().toLowerCase().split(/\s+/);
+    if (keyword === '' || words.includes(keyword)) {
       const added = wheel.addParticipant(username);
       if (added) {
         addParticipantChip(username);
@@ -105,8 +105,7 @@
     wheel.clear();
     lastWinner = null;
     winnerDisplay.classList.add('hidden');
-    participantsList.innerHTML = '';
-    participantsSection.style.display = 'none';
+    participantsList.innerHTML = '<span class="empty-hint">Waiting for viewers...</span>';
     updateParticipantCount();
   });
 
@@ -145,12 +144,14 @@
   }
 
   function addParticipantChip(username) {
-    participantsSection.style.display = 'flex';
+    // Remove empty hint on first participant
+    const hint = participantsList.querySelector('.empty-hint');
+    if (hint) hint.remove();
+
     const chip = document.createElement('span');
     chip.className = 'participant-chip';
     chip.textContent = username;
     participantsList.appendChild(chip);
-    // Scroll to newest chip
     participantsList.scrollTop = participantsList.scrollHeight;
   }
 
@@ -167,7 +168,6 @@
 
   /* ── Confetti ────────────────────────────────────────────── */
   function fireConfetti() {
-    // Lightweight canvas-based confetti — no external deps
     let canvas = document.getElementById('confetti-canvas');
     if (!canvas) {
       canvas = document.createElement('canvas');
@@ -204,7 +204,7 @@
       for (const p of pieces) {
         p.x  += p.vx;
         p.y  += p.vy;
-        p.vy += 0.12; // gravity
+        p.vy += 0.12;
         p.r  += p.dr;
         if (p.y > canvas.height * 0.7) p.op -= 0.015;
         if (p.op <= 0) continue;

@@ -33,7 +33,7 @@ class WordCloud {
     if (this.countEl) this.countEl.textContent = `${this.totalMessages} message${this.totalMessages !== 1 ? 's' : ''}`;
 
     // Remove the empty-state placeholder
-    const empty = this.feedEl.querySelector('.chat-empty');
+    const empty = this.feedEl.querySelector('.empty-hint');
     if (empty) empty.remove();
 
     // Add to live feed
@@ -64,7 +64,7 @@ class WordCloud {
     if (this.countEl) this.countEl.textContent = '0 messages';
 
     this.cloudEl.innerHTML = '<div class="cloud-empty">Capturing messages — words will appear here</div>';
-    this.feedEl.innerHTML  = '<div class="chat-empty">Waiting for messages...</div>';
+    this.feedEl.innerHTML  = '<span class="empty-hint">Waiting for messages...</span>';
   }
 
   /* ── Internal ────────────────────────────────────────────── */
@@ -72,7 +72,7 @@ class WordCloud {
   _addToFeed(username, text) {
     const el = document.createElement('div');
     el.className = 'chat-message';
-    el.innerHTML = `<span class="username">${this._escape(username)}</span>${this._escape(text)}`;
+    el.innerHTML = `<span class="username">${this._escape(username)}</span><span class="separator"></span><span class="msg-text">${this._escape(text)}</span>`;
     this.feedEl.appendChild(el);
 
     // Cap feed size

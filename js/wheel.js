@@ -56,6 +56,7 @@ class Wheel {
     this._items = [];
 
     this._buildSlots();
+    this._render();
   }
 
   /* ── Public API ───────────────────────────────────────────── */
@@ -63,7 +64,11 @@ class Wheel {
   addParticipant(username) {
     if (!this.participants.includes(username)) {
       this.participants.push(username);
-      this._rebuildItems();
+      // NEVER rebuild items during a spin — it corrupts the animation target.
+      // The next spin() call rebuilds from the full participant list anyway.
+      if (!this.isSpinning) {
+        this._rebuildItems();
+      }
       return true;
     }
     return false;
@@ -98,8 +103,10 @@ class Wheel {
     const winnerIdx    = 0; // winner is at position 0 in the shuffled list
     const n            = shuffled.length;
 
-    // Target: land on winner after SPINS full cycles past current position
-    const targetIndex  = startIndex + SPINS * n + winnerIdx;
+    // Align target so that targetIndex % n === winnerIdx.
+    // Without correction, startIndex % n could point to any item.
+    const correction   = ((winnerIdx - (startIndex % n)) + n) % n;
+    const targetIndex  = startIndex + correction + SPINS * n;
     const targetOffset = targetIndex * this.ITEM_H;
 
     // Adjust duration based on distance so very small lists don't snap
