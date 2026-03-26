@@ -57,7 +57,9 @@ class MessageCloud {
   /* ── Internal ────────────────────────────────────────────── */
 
   _renderCloud() {
+    // Only show messages that have been repeated (count >= 2)
     const sorted = Object.values(this.counts)
+      .filter(e => e.count >= 2)
       .sort((a, b) => b.count - a.count)
       .slice(0, this.MAX_ENTRIES);
 
