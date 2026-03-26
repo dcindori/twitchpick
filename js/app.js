@@ -245,9 +245,12 @@
     updateParticipantCount();
   }
 
+  const participantsBadge = document.getElementById('participants-badge');
+
   function updateParticipantCount() {
     const n = wheel.count();
     participantCount.textContent = n;
+    participantsBadge.textContent = n;
     spinBtn.disabled = (n === 0);
   }
 
