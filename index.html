@@ -4,113 +4,168 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TwitchPick</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <div class="brand">TwitchPick</div>
-    <div class="connect-row">
-      <div class="input-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <input type="text" id="channel-input" placeholder="channel name" autocomplete="off" spellcheck="false" />
-      </div>
-      <div class="input-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="keyword-input" placeholder="keyword (optional)" autocomplete="off" spellcheck="false" />
-      </div>
-      <button id="connect-btn" class="btn btn-primary">Connect</button>
-      <div id="status-badge" class="status-badge disconnected">
-        <span class="status-dot"></span>
-        <span id="status-text">Disconnected</span>
+  <!-- ═══ HEADER ═══ -->
+  <header class="header">
+    <div class="header-left">
+      <div class="brand">
+        <svg class="brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M3.5 2L2 6.5V20h5.5v3H11l3-3h4l5.5-5.5V2H3.5zM20.5 13l-3.5 3.5h-5L9 19.5V16.5H4.5V4h16v9z" fill="currentColor"/>
+          <rect x="10" y="7" width="2" height="5" rx="1" fill="currentColor"/>
+          <rect x="14.5" y="7" width="2" height="5" rx="1" fill="currentColor"/>
+        </svg>
+        <span>TwitchPick</span>
       </div>
     </div>
+
+    <div class="header-center">
+      <div class="input-group">
+        <div class="input-field">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <input type="text" id="channel-input" placeholder="Channel name" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="input-field">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="keyword-input" placeholder="Keyword (optional)" autocomplete="off" spellcheck="false" />
+        </div>
+        <button id="connect-btn" class="btn btn-connect">
+          <span class="btn-connect-dot"></span>
+          Connect
+        </button>
+      </div>
+    </div>
+
+    <div class="header-right"></div>
   </header>
 
-  <!-- MAIN LAYOUT -->
-  <main class="layout">
+  <!-- ═══ MAIN LAYOUT ═══ -->
+  <div class="app-layout">
 
-    <!-- ===== WHEEL PANEL ===== -->
-    <section class="panel wheel-panel">
-      <div class="panel-header">
-        <h2>Spin Wheel</h2>
-        <div class="panel-actions">
-          <span id="participant-count" class="badge">0 participants</span>
-          <button id="clear-participants-btn" class="btn btn-ghost btn-sm">Clear</button>
+    <!-- ─── MAIN CONTENT ─── -->
+    <main class="content-area">
+
+      <!-- Tab Bar -->
+      <nav class="tab-bar">
+        <button class="tab active" data-tab="wheel">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+          Spin Wheel
+          <span id="participant-count" class="tab-badge">0</span>
+        </button>
+        <button class="tab" data-tab="cloud">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 10h2a4 4 0 0 1 0 8h-1M7 10H5a4 4 0 0 0 0 8h1M12 2v4M8 4l1 2M16 4l-1 2"/><rect x="7" y="10" width="10" height="10" rx="2"/></svg>
+          Word Cloud
+          <span id="message-count" class="tab-badge">0</span>
+        </button>
+        <div class="tab-indicator"></div>
+      </nav>
+
+      <!-- ═══ WHEEL TAB ═══ -->
+      <section class="tab-content active" id="tab-wheel">
+        <div class="wheel-layout">
+
+          <!-- Left: Wheel + Controls -->
+          <div class="wheel-col">
+            <div class="wheel-scene" id="wheel-scene">
+              <div class="wheel-highlight-zone"></div>
+              <div class="wheel-pointer wheel-pointer-left">
+                <svg viewBox="0 0 16 24" width="14" height="21">
+                  <path d="M0 12L14 2V22Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="wheel-pointer wheel-pointer-right">
+                <svg viewBox="0 0 16 24" width="14" height="21">
+                  <path d="M16 12L2 2V22Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="wheel-fade wheel-fade-top"></div>
+              <div class="wheel-fade wheel-fade-bottom"></div>
+              <div class="wheel-slots" id="wheel-slots"></div>
+            </div>
+
+            <div class="wheel-actions">
+              <button id="spin-btn" class="btn btn-action btn-spin" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5,3 19,12 5,21"/></svg>
+                Spin
+              </button>
+              <button id="clear-participants-btn" class="btn btn-action btn-clear">Clear All</button>
+            </div>
+          </div>
+
+          <!-- Right: Winner + Previous Winners + Participants -->
+          <div class="sidebar-col">
+            <!-- Winner -->
+            <div id="winner-display" class="winner-display hidden">
+              <div class="winner-card">
+                <div class="winner-label">Winner</div>
+                <div id="winner-name" class="winner-name"></div>
+                <div class="winner-note">Excluded from next spin</div>
+              </div>
+            </div>
+
+            <!-- Previous Winners -->
+            <div class="prev-winners" id="prev-winners-wrap" style="display:none">
+              <div class="section-label">Previous winners</div>
+              <div id="prev-winners-list" class="prev-winners-list"></div>
+            </div>
+
+            <!-- Participants -->
+            <div class="participants-section">
+              <div class="participants-header">
+                <span class="section-label">Participants</span>
+              </div>
+              <div id="participants-list" class="participants-list">
+                <span class="empty-hint">Waiting for viewers…</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Top area: wheel + controls + winner (does not grow) -->
-      <div class="wheel-area">
-        <!-- THE WHEEL -->
-        <div class="wheel-scene" id="wheel-scene">
-          <div class="wheel-line wheel-line-top"></div>
-          <div class="wheel-line wheel-line-bottom"></div>
-          <div class="wheel-highlight-zone"></div>
-          <div class="wheel-arrow wheel-arrow-left">&#9654;</div>
-          <div class="wheel-arrow wheel-arrow-right">&#9664;</div>
-          <div class="wheel-fade wheel-fade-top"></div>
-          <div class="wheel-fade wheel-fade-bottom"></div>
-          <div class="wheel-slots" id="wheel-slots"></div>
+      <!-- ═══ WORD CLOUD TAB ═══ -->
+      <section class="tab-content" id="tab-cloud">
+        <div class="cloud-layout">
+          <div class="cloud-toolbar">
+            <button id="reset-cloud-btn" class="btn btn-action btn-clear">Reset Cloud</button>
+          </div>
+          <div class="cloud-words-wrap">
+            <div id="cloud-words" class="cloud-words">
+              <div class="cloud-empty">Connect to a channel to start capturing messages</div>
+            </div>
+          </div>
         </div>
+      </section>
+    </main>
 
-        <div class="wheel-controls">
-          <button id="spin-btn" class="btn btn-accent btn-lg" disabled>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5,3 19,12 5,21"/></svg>
-            Spin
+    <!-- ─── BOTTOM: Chat Footer ─── -->
+    <footer class="chat-footer">
+      <div class="chat-footer-header">
+        <h3>Live Chat</h3>
+        <div id="status-badge" class="status-badge disconnected">
+          <span class="status-dot"></span>
+          <span id="status-text">Disconnected</span>
+        </div>
+        <div class="chat-font-controls">
+          <button id="chat-font-down" class="btn-font" title="Decrease font size">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <span id="chat-font-label" class="chat-font-label">12</span>
+          <button id="chat-font-up" class="btn-font" title="Increase font size">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
-
-        <!-- Winner + previous winners stay near the wheel -->
-        <div id="winner-display" class="winner-display hidden">
-          <div class="winner-label">Winner</div>
-          <div id="winner-name" class="winner-name"></div>
-          <button id="remove-winner-btn" class="btn btn-ghost btn-sm" style="margin-top:8px">Remove &amp; Respin</button>
-        </div>
-
-        <div class="prev-winners" id="prev-winners-wrap" style="display:none">
-          <div class="section-label">Previous winners</div>
-          <div id="prev-winners-list" class="prev-winners-list"></div>
-        </div>
       </div>
-
-      <!-- Bottom area: participants (fills remaining space) -->
-      <div class="bottom-section" id="participants-section">
-        <div class="section-label">Participants</div>
-        <div id="participants-list" class="participants-list">
-          <span class="empty-hint">Waiting for viewers...</span>
-        </div>
+      <div id="chat-feed" class="chat-feed">
+        <span class="empty-hint">Waiting for messages…</span>
       </div>
-    </section>
+    </footer>
 
-    <!-- ===== WORD CLOUD PANEL ===== -->
-    <section class="panel cloud-panel">
-      <div class="panel-header">
-        <h2>Word Cloud</h2>
-        <div class="panel-actions">
-          <span id="message-count" class="badge">0 messages</span>
-          <button id="reset-cloud-btn" class="btn btn-ghost btn-sm">Reset</button>
-        </div>
-      </div>
-
-      <!-- Top area: ranked words -->
-      <div class="cloud-words-wrap">
-        <div id="cloud-words" class="cloud-words">
-          <div class="cloud-empty">Connect to a channel to start capturing messages</div>
-        </div>
-      </div>
-
-      <!-- Bottom area: live chat (matches participants height) -->
-      <div class="bottom-section">
-        <div class="section-label">Live Chat</div>
-        <div id="chat-feed" class="chat-feed">
-          <span class="empty-hint">Waiting for messages...</span>
-        </div>
-      </div>
-    </section>
-
-  </main>
+  </div>
 
   <script src="js/twitch.js"></script>
   <script src="js/wheel.js"></script>

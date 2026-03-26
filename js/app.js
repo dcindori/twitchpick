@@ -15,7 +15,6 @@
   const spinBtn            = document.getElementById('spin-btn');
   const winnerDisplay      = document.getElementById('winner-display');
   const winnerName         = document.getElementById('winner-name');
-  const removeWinnerBtn    = document.getElementById('remove-winner-btn');
   const prevWinnersWrap    = document.getElementById('prev-winners-wrap');
   const prevWinnersList    = document.getElementById('prev-winners-list');
 
@@ -23,6 +22,26 @@
 
   const resetCloudBtn      = document.getElementById('reset-cloud-btn');
   const messageCount       = document.getElementById('message-count');
+
+  const chatFontDown  = document.getElementById('chat-font-down');
+  const chatFontUp    = document.getElementById('chat-font-up');
+  const chatFontLabel = document.getElementById('chat-font-label');
+
+  /* ── Tabs ───────────────────────────────────────────────── */
+  const tabs        = document.querySelectorAll('.tab');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      tabContents.forEach(tc => tc.classList.remove('active'));
+      document.getElementById('tab-' + target).classList.add('active');
+    });
+  });
 
   /* ── Sub-systems ─────────────────────────────────────────── */
   const chat = new TwitchChat();
@@ -53,14 +72,21 @@
     if (connected) {
       chat.disconnect();
       connected = false;
-      connectBtn.textContent = 'Connect';
+      connectBtn.innerHTML = '<span class="btn-connect-dot"></span>Connect';
+      connectBtn.classList.remove('is-connected');
+      resetEverything();
     } else {
       chat.connect(ch);
-      connectBtn.textContent = 'Disconnect';
+      connectBtn.innerHTML = '<span class="btn-connect-dot"></span>Disconnect';
+      connectBtn.classList.add('is-connected');
     }
   });
 
+  // Enter key on both inputs triggers connect
   channelInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') connectBtn.click();
+  });
+  keywordInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') connectBtn.click();
   });
 
@@ -70,10 +96,12 @@
 
     if (state === 'connected') {
       connected = true;
-      connectBtn.textContent = 'Disconnect';
+      connectBtn.innerHTML = '<span class="btn-connect-dot"></span>Disconnect';
+      connectBtn.classList.add('is-connected');
     } else if (state === 'disconnected' || state === 'error') {
       connected = false;
-      connectBtn.textContent = 'Connect';
+      connectBtn.innerHTML = '<span class="btn-connect-dot"></span>Connect';
+      connectBtn.classList.remove('is-connected');
     }
   };
 
@@ -84,6 +112,13 @@
     // Word cloud always gets every message
     cloud.addMessage(username, message);
 
+    // After the message is added to the feed, check if this user is a winner
+    const isWinner = allWinners.some(w => w.toLowerCase() === username.toLowerCase());
+    if (isWinner) {
+      const lastMsg = document.querySelector('.chat-feed .chat-message:last-child');
+      if (lastMsg) lastMsg.classList.add('winner-match');
+    }
+
     // Wheel: add participant if any word in message matches keyword exactly (case insensitive)
     const words = message.trim().toLowerCase().split(/\s+/);
     if (keyword === '' || words.includes(keyword)) {
@@ -91,10 +126,13 @@
       if (added) {
         addParticipantChip(username);
         updateParticipantCount();
-        // Highlight matching messages in feed
+        // Highlight matching messages in feed (keyword takes precedence over winner)
         if (keyword !== '') {
           const lastMsg = document.querySelector('.chat-feed .chat-message:last-child');
-          if (lastMsg) lastMsg.classList.add('keyword-match');
+          if (lastMsg) {
+            lastMsg.classList.remove('winner-match');
+            lastMsg.classList.add('keyword-match');
+          }
         }
       }
     }
@@ -104,9 +142,16 @@
   clearParticipants.addEventListener('click', () => {
     wheel.clear();
     lastWinner = null;
+    allWinners.length = 0;
     winnerDisplay.classList.add('hidden');
-    participantsList.innerHTML = '<span class="empty-hint">Waiting for viewers...</span>';
+    participantsList.innerHTML = '<span class="empty-hint">Waiting for viewers…</span>';
+    prevWinnersList.innerHTML = '';
+    prevWinnersWrap.style.display = 'none';
     updateParticipantCount();
+    // Remove winner highlights from existing chat messages
+    document.querySelectorAll('.chat-message.winner-match').forEach(el => {
+      el.classList.remove('winner-match');
+    });
   });
 
   spinBtn.addEventListener('click', () => {
@@ -118,20 +163,14 @@
     });
   });
 
-  removeWinnerBtn.addEventListener('click', () => {
-    if (lastWinner) {
-      wheel.removeWinner(lastWinner);
-      winnerDisplay.classList.add('hidden');
-      // Immediately spin again
-      if (wheel.count() - allWinners.length > 0) {
-        setTimeout(() => wheel.spin(w => { showWinner(w); fireConfetti(); }), 200);
-      }
-    }
-  });
-
   function showWinner(winner) {
     lastWinner = winner;
     allWinners.push(winner);
+
+    // Auto-exclude winner from future spins
+    wheel.removeWinner(winner);
+    removeParticipantChip(winner);
+
     winnerName.textContent = winner;
     winnerDisplay.classList.remove('hidden');
 
@@ -141,30 +180,88 @@
     tag.className = 'prev-winner-tag';
     tag.textContent = winner;
     prevWinnersList.appendChild(tag);
+
+    // Retroactively highlight this winner's messages in chat
+    highlightWinnerMessages(winner);
+  }
+
+  function highlightWinnerMessages(winner) {
+    const lowerWinner = winner.toLowerCase();
+    document.querySelectorAll('.chat-feed .chat-message').forEach(msg => {
+      const usernameEl = msg.querySelector('.username');
+      if (usernameEl && usernameEl.textContent.toLowerCase() === lowerWinner) {
+        if (!msg.classList.contains('keyword-match')) {
+          msg.classList.add('winner-match');
+        }
+      }
+    });
   }
 
   function addParticipantChip(username) {
-    // Remove empty hint on first participant
     const hint = participantsList.querySelector('.empty-hint');
     if (hint) hint.remove();
 
     const chip = document.createElement('span');
     chip.className = 'participant-chip';
+    chip.dataset.username = username.toLowerCase();
     chip.textContent = username;
     participantsList.appendChild(chip);
     participantsList.scrollTop = participantsList.scrollHeight;
   }
 
+  function removeParticipantChip(username) {
+    const chip = participantsList.querySelector(
+      `.participant-chip[data-username="${username.toLowerCase()}"]`
+    );
+    if (chip) {
+      chip.style.transition = 'opacity .2s, transform .2s';
+      chip.style.opacity = '0';
+      chip.style.transform = 'scale(.8)';
+      setTimeout(() => chip.remove(), 200);
+    }
+    updateParticipantCount();
+  }
+
   function updateParticipantCount() {
     const n = wheel.count();
-    participantCount.textContent = `${n} participant${n !== 1 ? 's' : ''}`;
+    participantCount.textContent = n;
     spinBtn.disabled = (n === 0);
+  }
+
+  /* ── Reset everything (on disconnect) ──────────────────── */
+  function resetEverything() {
+    wheel.clear();
+    lastWinner = null;
+    allWinners.length = 0;
+    winnerDisplay.classList.add('hidden');
+    participantsList.innerHTML = '<span class="empty-hint">Waiting for viewers…</span>';
+    prevWinnersList.innerHTML = '';
+    prevWinnersWrap.style.display = 'none';
+    updateParticipantCount();
+
+    // Reset cloud and chat feed
+    cloud.reset();
+    cloud.clearFeed();
   }
 
   /* ── Word cloud controls ─────────────────────────────────── */
   resetCloudBtn.addEventListener('click', () => {
     cloud.reset();
   });
+
+  /* ── Chat font size controls ───────────────────────────── */
+  let chatFontSize = 12;
+  const CHAT_FONT_MIN = 10;
+  const CHAT_FONT_MAX = 18;
+
+  function setChatFontSize(size) {
+    chatFontSize = Math.max(CHAT_FONT_MIN, Math.min(CHAT_FONT_MAX, size));
+    document.documentElement.style.setProperty('--chat-font', chatFontSize + 'px');
+    chatFontLabel.textContent = chatFontSize;
+  }
+
+  chatFontDown.addEventListener('click', () => setChatFontSize(chatFontSize - 1));
+  chatFontUp.addEventListener('click', () => setChatFontSize(chatFontSize + 1));
 
   /* ── Confetti ────────────────────────────────────────────── */
   function fireConfetti() {
@@ -179,7 +276,7 @@
 
     const ctx    = canvas.getContext('2d');
     const pieces = [];
-    const COLORS = ['#9147ff','#ff6b35','#00d566','#ffcb47','#ff4b4b','#fff'];
+    const COLORS = ['#a970ff','#f97316','#22c55e','#facc15','#ef4444','#fff'];
     const N      = 140;
 
     for (let i = 0; i < N; i++) {

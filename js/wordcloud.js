@@ -64,7 +64,10 @@ class WordCloud {
     if (this.countEl) this.countEl.textContent = '0 messages';
 
     this.cloudEl.innerHTML = '<div class="cloud-empty">Capturing messages — words will appear here</div>';
-    this.feedEl.innerHTML  = '<span class="empty-hint">Waiting for messages...</span>';
+  }
+
+  clearFeed() {
+    this.feedEl.innerHTML = '<span class="empty-hint">Waiting for messages...</span>';
   }
 
   /* ── Internal ────────────────────────────────────────────── */
@@ -121,7 +124,18 @@ class WordCloud {
       row.querySelector('.cloud-word-text').textContent  = word;
       row.querySelector('.cloud-word-text').style.fontSize = `${fontSize}px`;
       row.querySelector('.cloud-word-text').style.opacity  = opacity;
-      row.querySelector('.cloud-word-count').textContent = `×${count}`;
+
+      const countEl = row.querySelector('.cloud-word-count');
+      const oldCount = countEl.textContent;
+      const newCount = `×${count}`;
+      countEl.textContent = newCount;
+
+      // Animate badge when count changes
+      if (oldCount !== newCount && oldCount !== '') {
+        countEl.classList.remove('bump');
+        void countEl.offsetWidth; // reflow to restart animation
+        countEl.classList.add('bump');
+      }
     });
 
     // Remove surplus rows (list got shorter after reset somehow)
