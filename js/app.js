@@ -89,11 +89,8 @@
     }
   });
 
-  // Enter key on both inputs triggers connect
+  // Enter key on channel input triggers connect
   channelInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') connectBtn.click();
-  });
-  keywordInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') connectBtn.click();
   });
 

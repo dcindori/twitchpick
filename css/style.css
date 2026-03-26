@@ -491,13 +491,36 @@ html, body {
   background: linear-gradient(to top, var(--bg) 5%, transparent 100%);
 }
 
-/* Controls row */
+/* Controls row — matches input-group style */
 .wheel-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   margin: 18px 0 14px;
   flex-shrink: 0;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.wheel-actions .input-field input {
+  width: 160px;
+}
+
+.wheel-actions .btn-spin {
+  height: 34px;
+  padding: 0 18px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+
+.wheel-actions .btn-clear {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  border: none;
 }
 
 /* ── Right sidebar column ── */
