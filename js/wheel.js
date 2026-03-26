@@ -126,6 +126,7 @@ class Wheel {
 
   removeWinner(winner) {
     this.removed.push(winner);
+    this.participants = this.participants.filter(p => p !== winner);
   }
 
   /* ── Internal ─────────────────────────────────────────────── */

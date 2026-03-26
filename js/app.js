@@ -94,6 +94,24 @@
     if (e.key === 'Enter') connectBtn.click();
   });
 
+  // Keyword change clears participants so the pool matches the new filter
+  keywordInput.addEventListener('input', () => {
+    wheel.clear();
+    lastWinner = null;
+    allWinners.length = 0;
+    winnerDisplay.classList.add('hidden');
+    participantsList.innerHTML = '<span class="empty-hint">Waiting for viewers…</span>';
+    prevWinnersList.innerHTML = '';
+    prevWinnersWrap.style.display = 'none';
+    updateParticipantCount();
+    document.querySelectorAll('.chat-message.keyword-match').forEach(el => {
+      el.classList.remove('keyword-match');
+    });
+    document.querySelectorAll('.chat-message.winner-match').forEach(el => {
+      el.classList.remove('winner-match');
+    });
+  });
+
   chat.onStatus = (state, detail) => {
     statusBadge.className = 'status-badge ' + state;
     statusText.textContent = detail || state;
