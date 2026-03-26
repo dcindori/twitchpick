@@ -58,8 +58,13 @@
           <span id="participant-count" class="tab-badge">0</span>
         </button>
         <button class="tab" data-tab="cloud">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 10h2a4 4 0 0 1 0 8h-1M7 10H5a4 4 0 0 0 0 8h1M12 2v4M8 4l1 2M16 4l-1 2"/><rect x="7" y="10" width="10" height="10" rx="2"/></svg>
-          Word Cloud
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h12"/></svg>
+          Word Counter
+          <span id="word-count" class="tab-badge">0</span>
+        </button>
+        <button class="tab" data-tab="msgcloud">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message Counter
           <span id="message-count" class="tab-badge">0</span>
         </button>
         <div class="tab-indicator"></div>
@@ -127,14 +132,28 @@
         </div>
       </section>
 
-      <!-- ═══ WORD CLOUD TAB ═══ -->
+      <!-- ═══ WORD COUNTER TAB ═══ -->
       <section class="tab-content" id="tab-cloud">
         <div class="cloud-layout">
           <div class="cloud-toolbar">
-            <button id="reset-cloud-btn" class="btn btn-action btn-clear">Reset Cloud</button>
+            <button id="reset-cloud-btn" class="btn btn-action btn-clear">Reset Words</button>
           </div>
           <div class="cloud-words-wrap">
             <div id="cloud-words" class="cloud-words">
+              <div class="cloud-empty">Connect to a channel to start capturing words</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ MESSAGE COUNTER TAB ═══ -->
+      <section class="tab-content" id="tab-msgcloud">
+        <div class="cloud-layout">
+          <div class="cloud-toolbar">
+            <button id="reset-msgcloud-btn" class="btn btn-action btn-clear">Reset Messages</button>
+          </div>
+          <div class="cloud-words-wrap">
+            <div id="msgcloud-words" class="cloud-words">
               <div class="cloud-empty">Connect to a channel to start capturing messages</div>
             </div>
           </div>
@@ -170,6 +189,7 @@
   <script src="js/twitch.js"></script>
   <script src="js/wheel.js"></script>
   <script src="js/wordcloud.js"></script>
+  <script src="js/messagecloud.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

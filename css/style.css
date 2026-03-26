@@ -70,10 +70,11 @@ html, body {
   gap: 20px;
   flex-shrink: 0;
   z-index: 100;
+  position: relative;
 }
 
-.header-left { flex-shrink: 0; }
-.header-right { flex-shrink: 0; }
+.header-left { flex-shrink: 0; z-index: 1; }
+.header-right { flex-shrink: 0; z-index: 1; }
 
 .brand {
   display: flex;
@@ -87,9 +88,10 @@ html, body {
 .brand-icon { color: var(--accent); }
 
 .header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .input-group {

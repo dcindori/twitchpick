@@ -21,6 +21,8 @@
   const participantsList   = document.getElementById('participants-list');
 
   const resetCloudBtn      = document.getElementById('reset-cloud-btn');
+  const wordCount          = document.getElementById('word-count');
+  const resetMsgCloudBtn   = document.getElementById('reset-msgcloud-btn');
   const messageCount       = document.getElementById('message-count');
 
   const chatFontDown  = document.getElementById('chat-font-down');
@@ -54,6 +56,11 @@
   const cloud = new WordCloud(
     document.getElementById('cloud-words'),
     document.getElementById('chat-feed'),
+    wordCount
+  );
+
+  const msgCloud = new MessageCloud(
+    document.getElementById('msgcloud-words'),
     messageCount
   );
 
@@ -109,8 +116,9 @@
   chat.onMessage = (username, message) => {
     const keyword = keywordInput.value.trim().toLowerCase();
 
-    // Word cloud always gets every message
+    // Both counters get every message
     cloud.addMessage(username, message);
+    msgCloud.addMessage(username, message);
 
     // After the message is added to the feed, check if this user is a winner
     const isWinner = allWinners.some(w => w.toLowerCase() === username.toLowerCase());
@@ -239,14 +247,19 @@
     prevWinnersWrap.style.display = 'none';
     updateParticipantCount();
 
-    // Reset cloud and chat feed
+    // Reset counters and chat feed
     cloud.reset();
     cloud.clearFeed();
+    msgCloud.reset();
   }
 
-  /* ── Word cloud controls ─────────────────────────────────── */
+  /* ── Counter controls ────────────────────────────────────── */
   resetCloudBtn.addEventListener('click', () => {
     cloud.reset();
+  });
+
+  resetMsgCloudBtn.addEventListener('click', () => {
+    msgCloud.reset();
   });
 
   /* ── Chat font size controls ───────────────────────────── */

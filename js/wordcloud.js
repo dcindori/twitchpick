@@ -30,7 +30,7 @@ class WordCloud {
 
   addMessage(username, text) {
     this.totalMessages++;
-    if (this.countEl) this.countEl.textContent = `${this.totalMessages} message${this.totalMessages !== 1 ? 's' : ''}`;
+    if (this.countEl) this.countEl.textContent = this.totalMessages;
 
     // Remove the empty-state placeholder
     const empty = this.feedEl.querySelector('.empty-hint');
@@ -61,7 +61,7 @@ class WordCloud {
     this.counts        = {};
     this.totalMessages = 0;
 
-    if (this.countEl) this.countEl.textContent = '0 messages';
+    if (this.countEl) this.countEl.textContent = '0';
 
     this.cloudEl.innerHTML = '<div class="cloud-empty">Capturing messages — words will appear here</div>';
   }
