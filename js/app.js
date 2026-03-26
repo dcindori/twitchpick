@@ -104,9 +104,6 @@
     prevWinnersList.innerHTML = '';
     prevWinnersWrap.style.display = 'none';
     updateParticipantCount();
-    document.querySelectorAll('.chat-message.keyword-match').forEach(el => {
-      el.classList.remove('keyword-match');
-    });
     document.querySelectorAll('.chat-message.winner-match').forEach(el => {
       el.classList.remove('winner-match');
     });
@@ -130,16 +127,23 @@
   /* ── Chat messages ───────────────────────────────────────── */
   chat.onMessage = (username, message) => {
     const keyword = keywordInput.value.trim().toLowerCase();
+    const channel = channelInput.value.trim().toLowerCase();
 
     // Both counters get every message
     cloud.addMessage(username, message);
     msgCloud.addMessage(username, message);
 
-    // After the message is added to the feed, check if this user is a winner
+    const lastMsg = document.querySelector('.chat-feed .chat-message:last-child');
+
+    // Highlight @mentions of the connected channel
+    if (channel && message.toLowerCase().includes('@' + channel)) {
+      if (lastMsg) lastMsg.classList.add('mention-match');
+    }
+
+    // Check if this user is a winner
     const isWinner = allWinners.some(w => w.toLowerCase() === username.toLowerCase());
-    if (isWinner) {
-      const lastMsg = document.querySelector('.chat-feed .chat-message:last-child');
-      if (lastMsg) lastMsg.classList.add('winner-match');
+    if (isWinner && lastMsg && !lastMsg.classList.contains('mention-match')) {
+      lastMsg.classList.add('winner-match');
     }
 
     // Wheel: add participant if any word in message matches keyword exactly (case insensitive)
@@ -149,14 +153,6 @@
       if (added) {
         addParticipantChip(username);
         updateParticipantCount();
-        // Highlight matching messages in feed (keyword takes precedence over winner)
-        if (keyword !== '') {
-          const lastMsg = document.querySelector('.chat-feed .chat-message:last-child');
-          if (lastMsg) {
-            lastMsg.classList.remove('winner-match');
-            lastMsg.classList.add('keyword-match');
-          }
-        }
       }
     }
   };

@@ -867,13 +867,14 @@ html, body {
   word-break: break-word;
 }
 
-/* Keyword match highlight */
-.chat-message.keyword-match .username { color: var(--orange); }
-.chat-message.keyword-match {
-  color: var(--text);
+/* @mention highlight */
+.chat-message.mention-match {
   background: var(--orange-soft);
+  border-left: 2px solid var(--orange);
+  padding-left: 18px;
 }
-.chat-message.keyword-match .msg-text { color: var(--text); }
+.chat-message.mention-match .username { color: var(--orange); }
+.chat-message.mention-match .msg-text { color: var(--text); }
 
 /* Winner highlight — green tint, distinct from keyword orange */
 .chat-message.winner-match {
