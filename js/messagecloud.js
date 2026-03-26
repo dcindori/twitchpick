@@ -25,9 +25,6 @@ class MessageCloud {
   /* ── Public API ─────────────────────────────────────────── */
 
   addMessage(username, text) {
-    this.totalMessages++;
-    if (this.countEl) this.countEl.textContent = this.totalMessages;
-
     const key = text.trim().toLowerCase();
     if (key.length === 0) return;
 
@@ -35,6 +32,8 @@ class MessageCloud {
       this.counts[key] = { display: text.trim(), count: 0 };
     }
     this.counts[key].count++;
+
+    this._updateBadge();
 
     if (!this._renderScheduled) {
       this._renderScheduled = true;
@@ -45,9 +44,14 @@ class MessageCloud {
     }
   }
 
+  _updateBadge() {
+    if (!this.countEl) return;
+    const repeated = Object.values(this.counts).filter(e => e.count >= 2).length;
+    this.countEl.textContent = repeated;
+  }
+
   reset() {
-    this.counts        = {};
-    this.totalMessages = 0;
+    this.counts = {};
 
     if (this.countEl) this.countEl.textContent = '0';
 
