@@ -7,15 +7,15 @@ No login required, no API keys — just enter a channel name and connect.
 ## Features
 
 - **Spin Wheel** — pick a random winner from chat participants
-- **Optional keyword filter** — only viewers who type the keyword enter the giveaway
-- **Live participant list** — see who entered in real-time
+- **Optional keyword filter** — only viewers who type the keyword enter the giveaway; changing the keyword resets participants automatically
+- **Live participant list** with real-time count badge
 - **Winners auto-excluded** from the next spin, tracked as tags
 - **Clear All** — reset and start a fresh giveaway without disconnecting
 
 ### Chat
 
 - Live chat feed with adjustable font size
-- Keyword messages highlighted in orange
+- @mentions of the connected channel highlighted in orange
 - Winner messages highlighted in green
 
 ### Word Counter
@@ -24,7 +24,7 @@ Counts individual words from chat and ranks by frequency. Useful for quick polls
 
 ### Message Counter
 
-Aggregates full messages (trimmed, case-insensitive) and ranks by frequency. Perfect for open-ended questions like "what should we play?" — instantly see what chat is voting for.
+Aggregates full messages (trimmed, case-insensitive) and ranks by frequency. Only shows repeated messages, filtering out unique noise. Perfect for open-ended questions like "what should we play?" — instantly see what chat is voting for.
 
 ## Usage
 
