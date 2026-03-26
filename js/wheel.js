@@ -98,7 +98,7 @@ class Wheel {
     // Rebuild items with this shuffle so the winner appears at index 0
     this._rebuildItems(shuffled);
 
-    const SPINS        = 8 + Math.floor(Math.random() * 4); // 8–11 full revolutions
+    const SPINS        = 5 + Math.floor(Math.random() * 3); // 5–7 full revolutions
     const startIndex   = Math.round(this.scrollOffset / this.ITEM_H);
     const winnerIdx    = 0; // winner is at position 0 in the shuffled list
     const n            = shuffled.length;
@@ -111,7 +111,7 @@ class Wheel {
 
     // Adjust duration based on distance so very small lists don't snap
     const distance = targetOffset - this.scrollOffset;
-    const duration = Math.max(4500, Math.min(7000, distance / 6));
+    const duration = Math.max(5000, Math.min(8000, distance / 5));
 
     this.isSpinning = true;
     this.scene.classList.add('spinning');
@@ -205,12 +205,8 @@ class Wheel {
       slot.wrap.style.transform  =
         `translateY(${y.toFixed(2)}px) translateZ(${z.toFixed(2)}px) rotateX(${rotX.toFixed(2)}deg)`;
 
-      // Centre slot indicator — only mark during animation if very close to snapped
-      // _markCenterSlot() is called on completion for the definitive highlight
-      if (!this.isSpinning) {
-        const snapped = Math.abs(frac) < 0.04 || Math.abs(frac - 1) < 0.04;
-        slot.wrap.classList.toggle('is-center', offset === 0 && snapped);
-      }
+      // Centre slot indicator — always track the closest item to center
+      slot.wrap.classList.toggle('is-center', offset === 0 && Math.abs(exactOffset) < 0.45);
 
       slot.inner.textContent = name;
     });
@@ -250,7 +246,7 @@ class Wheel {
 
     const elapsed = timestamp - this._t0;
     const t       = Math.min(elapsed / this._dur, 1);
-    const eased   = this._easeOutExpo(t);
+    const eased   = this._ease(t);
 
     this.scrollOffset = this._from + (this._to - this._from) * eased;
     this._render();
@@ -265,10 +261,14 @@ class Wheel {
   }
 
   /**
-   * easeOutExpo — identical feel to CS:GO case opening.
-   * Rapid start that decelerates to a near-halt at t=1.
+   * Ease-in-out quart — gentle start, fast middle, smooth natural stop.
+   * No blending tricks, just one continuous curve so it never looks rigged.
    */
-  _easeOutExpo(t) {
-    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  _ease(t) {
+    if (t < 0.5) {
+      return 8 * t * t * t * t;
+    }
+    const u = 1 - t;
+    return 1 - 8 * u * u * u * u;
   }
 }
